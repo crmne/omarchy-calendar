@@ -1111,10 +1111,16 @@ function notificationBody(event, nowMs, hour24) {
 // The system Python, because it has PyGObject on Omarchy and a mise or
 // virtualenv one first on PATH may not.
 //
+// The body is markup to a notification daemon, so it is escaped, or a place
+// like "AT&T <HQ>" reads as tags. The summary is plain text and is not.
+//
 // Every monitor's bar runs its own widget, and each would send the same
 // reminder. The first to create the reminder's marker directory claims it
 // (mkdir either creates or fails, atomically); the rest stay quiet. Markers
-// live in the runtime directory and are swept after two days.
+// live in the runtime directory, private to this user, and are swept after
+// two days. There is no shared fallback like /tmp, where another user could
+// claim a reminder first or put a link in place of the icon: without the
+// runtime directory the reminder is skipped.
 //
 // The icon is a small calendar page in the event's calendar colour with its
 // day on it, written once per colour and day next to the markers.
@@ -1122,7 +1128,11 @@ var notifyScript = [
   "import os, shutil, sys, time",
   "from gi.repository import Gio, GLib",
   "env = {k: os.environ.pop('OMACAL_' + k, '') for k in ('TITLE', 'BODY', 'LINK', 'MARKER', 'ICON', 'SVG')}",
-  "base = os.path.join(os.environ.get('XDG_RUNTIME_DIR') or '/tmp', 'omacal')",
+  "runtime = os.environ.get('XDG_RUNTIME_DIR', '')",
+  "if not runtime.startswith('/'):",
+  "    sys.exit(0)",
+  "os.umask(0o077)",
+  "base = os.path.join(runtime, 'omacal')",
   "shown = os.path.join(base, 'shown')",
   "try:",
   "    os.makedirs(shown, exist_ok=True)",
@@ -1158,6 +1168,10 @@ var notifyScript = [
   "loop.run()"
 ].join("\n")
 
+function escapeMarkup(value) {
+  return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+}
+
 // A calendar page: the calendar's colour, a darker band with two rings,
 // and the day of the month in the calendar ink.
 function notificationIcon(color, day) {
@@ -1190,7 +1204,7 @@ function notifyCommand(event, nowMs, hour24, fallbackLink, remindMs) {
     command: ["/usr/bin/python3", "-c", notifyScript],
     environment: {
       OMACAL_TITLE: String(event.title || ""),
-      OMACAL_BODY: notificationBody(event, nowMs, hour24),
+      OMACAL_BODY: escapeMarkup(notificationBody(event, nowMs, hour24)),
       OMACAL_LINK: link || "",
       OMACAL_MARKER: reminderMarker(reminderKey(event, remindMs === undefined ? nowMs : remindMs)),
       OMACAL_ICON: "icon-" + color + "-" + day + ".svg",

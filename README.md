@@ -257,8 +257,9 @@ plain text, and only `https` links are handed to `xdg-open`. Reminders are
 sent to the notification daemon over D-Bus by the system `python3` (with
 PyGObject, part of Omarchy), which gets the event's title, calendar, place
 and link in its environment rather than its arguments, so other users on the
-machine cannot read them from the process list. `hyprctl` binds the
-quick-add shortcut.
+machine cannot read them from the process list. It keeps its reminder markers
+and icons in `XDG_RUNTIME_DIR`, and skips the reminder if that is not set.
+`hyprctl` binds the quick-add shortcut.
 
 The form's **Where?** field also makes place lookups while you type: what you have typed,
 a moment after you stop, and nothing else. Without a key it goes to

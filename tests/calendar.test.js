@@ -318,6 +318,20 @@ test("a reminder keeps the event's details off the command line", function() {
   assert.strictEqual(cmd.environment.OMACAL_LINK, "https://meet.example.com/abc-defg-hij")
 })
 
+test("a reminder's body is escaped as markup and its title is left as written", function() {
+  var e = Hey.normalizeEvent({ id: 9, title: "1 < 2 & <b>", starts_at: "2026-09-29T09:30:00Z",
+    ends_at: "2026-09-29T10:00:00Z", location: "AT&T <HQ>", reminders: ["2026-09-29T09:15:00Z"] })
+  var env = Hey.notifyCommand(e, e.startMs - 15 * 60000, true, "", e.reminders[0]).environment
+  assert.strictEqual(env.OMACAL_TITLE, "1 < 2 & <b>")
+  assert.ok(env.OMACAL_BODY.indexOf("AT&amp;T &lt;HQ&gt;") !== -1)
+  assert.ok(env.OMACAL_BODY.indexOf("\n") !== -1, "lines stay lines")
+})
+
+test("reminders keep their files in the runtime directory, never in /tmp", function() {
+  assert.strictEqual(Hey.notifyCommand(Hey.normalizeEvent({ id: 1, starts_at: "2026-09-29T09:30:00Z" }), 0, true).command[2].indexOf("/tmp"), -1)
+  assert.ok(Hey.notifyCommand(Hey.normalizeEvent({ id: 1, starts_at: "2026-09-29T09:30:00Z" }), 0, true).command[2].indexOf("runtime.startswith('/')") !== -1)
+})
+
 test("declined events never notify", function() {
   var now = Date.UTC(2026, 8, 28, 10, 30)
   var e = Hey.normalizeEvent({ id: 1, title: "Nope", starts_at: "2026-09-28T11:00:00Z", status: "declined",
