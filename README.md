@@ -212,6 +212,7 @@ Calendar reads use `hey event week` or `hey event list`, `hey calendar
 list`, `hey timetrack`, and a long-running `hey watch` for live sync. `jq`
 reduces each change from the watch to its type before it reaches the shell,
 so the recording in it (notes, guest addresses, journal text) does not.
+A week is reduced to the same fields before its temporary file is written.
 Deleting events or tracks and starting or stopping the tracker also use
 hey-cli, with IDs only. Event creation and editing, and track renaming,
 use HEY's HTTP API directly: titles, places and track names are request
