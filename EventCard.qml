@@ -212,7 +212,7 @@ Item {
 
       PanelToolTip {
         visible: joinMouse.containsMouse
-        text: root.event && root.event.joinTitle !== "" ? root.event.joinTitle : "Join the meeting"
+        text: root.event ? Cal.withHost(root.event.joinTitle !== "" ? root.event.joinTitle : "Join the meeting", root.event.joinUrl) : ""
         fontFamily: root.fontFamily
       }
     }

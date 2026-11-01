@@ -54,11 +54,38 @@ function boundedString(value, limit) {
   return text.length > limit ? text.substr(0, limit) : text
 }
 
+// What sits between https:// and the path, query or fragment.
+function urlAuthority(url) {
+  return url.slice("https://".length).split(/[\/?#]/)[0]
+}
+
 // Only ever handed to a browser launcher, so anything that is not plainly a
-// web URL is dropped rather than passed along.
+// web URL is dropped rather than passed along. So is a link with a username
+// in it (https://meet.google.com@evil.example/): the host is what a person
+// can check, and everything before the @ exists to pass for one.
 function safeUrl(value) {
   var text = boundedString(value, 2048).replace(/^\s+|\s+$/g, "")
-  return /^https:\/\/[^\s"'<>\\]+$/.test(text) ? text : ""
+  if (!/^https:\/\/[^\s"'<>\\]+$/.test(text)) return ""
+  var authority = urlAuthority(text)
+  return authority !== "" && authority.indexOf("@") === -1 ? text : ""
+}
+
+// The host a link opens, to show beside it, or "". A long one keeps its end,
+// which is the part that says whose it is: elided the usual way,
+// meet.google.com.evil.example would read as Google.
+var maximumHostLength = 32
+
+function urlHost(value) {
+  var url = safeUrl(value)
+  if (url === "") return ""
+  var host = urlAuthority(url).replace(/:\d+$/, "").toLowerCase()
+  return host.length > maximumHostLength ? "…" + host.slice(1 - maximumHostLength) : host
+}
+
+// A tooltip's label, followed by the host its link opens.
+function withHost(label, url) {
+  var host = urlHost(url)
+  return host === "" ? label : label + " · " + host
 }
 
 // A file:// URL (Qt.resolvedUrl's) as the path it names.
@@ -1095,6 +1122,10 @@ function reminderLead(event, nowMs) {
 
 function notificationBody(event, nowMs, hour24) {
   var lines = [reminderLead(event, nowMs) + " · " + eventRangeLabel(event, hour24)]
+  // A meeting link is whoever sent the invitation's. It goes second because
+  // a collapsed toast shows two lines.
+  var host = urlHost(event.joinUrl)
+  if (host !== "") lines.push(host)
   if (event.calendar !== "") lines.push(event.calendar)
   if (event.location !== "") lines.push(event.location)
   return lines.join("\n")
@@ -1735,6 +1766,8 @@ if (typeof module !== "undefined") {
     isDayKey: isDayKey,
     boundedString: boundedString,
     safeUrl: safeUrl,
+    urlHost: urlHost,
+    withHost: withHost,
     localPath: localPath,
     parseInstant: parseInstant,
     normalizeEvent: normalizeEvent,

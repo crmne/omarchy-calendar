@@ -253,7 +253,10 @@ logout, and asked for again with its ETag after that.
 
 CLI calls and HTTP requests have timeouts, and responses are size-bounded.
 Event text is length-capped and drawn as
-plain text, and only `https` links are handed to `xdg-open`. Reminders are
+plain text, and only `https` links are handed to `xdg-open`. A link with a
+username in it (`https://user@host/`) is treated as no link at all. Hovering
+Join or Open in HEY names the host it opens, and a reminder with a meeting link
+names that link's host. Reminders are
 sent to the notification daemon over D-Bus by the system `python3` (with
 PyGObject, part of Omarchy), which gets the event's title, calendar, place
 and link in its environment rather than its arguments, so other users on the

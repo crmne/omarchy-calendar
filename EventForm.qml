@@ -443,6 +443,7 @@ Item {
         Button {
           visible: !!root.editing && root.editing.joinUrl !== ""
           text: root.editing && root.editing.joinTitle !== "" ? root.editing.joinTitle : "Join"
+          tooltipText: root.editing ? Cal.urlHost(root.editing.joinUrl) : ""
           iconText: "󰍫"
           foreground: root.foreground
           accent: root.accent
@@ -453,6 +454,7 @@ Item {
         Button {
           visible: !!root.editing && root.editing.url !== ""
           text: "Open in " + root.serviceName
+          tooltipText: root.editing ? Cal.urlHost(root.editing.url) : ""
           iconText: "󰏌"
           foreground: root.foreground
           accent: root.accent
