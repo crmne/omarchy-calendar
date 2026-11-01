@@ -214,8 +214,18 @@ var calendarsCommand = ["bash", "-c",
 // Calendar changes as HEY makes them, one JSON line each; any line but the
 // watch's own "ready" and "disconnected" means something changed. Mail is
 // left out: naming only calendar changes switches the mail side off.
-var watchCommand = ["hey", "watch", "--events",
-  "recording_added,recording_updated,recording_deleted,calendar_added,calendar_updated,calendar_deleted,calendar_resync"]
+//
+// HEY's line carries the whole recording: notes, guests, journal text. All
+// the shell needs is that something changed, so jq keeps the change's name
+// and drops the rest, along with any line it cannot read. hey is exec'd
+// with jq behind a process substitution, not a pipe: the shell stops the
+// process it started, and bash stopped in front of a pipe would leave `hey
+// watch` running on its own.
+var watchScript = "exec hey watch --events"
+  + " recording_added,recording_updated,recording_deleted,calendar_added,calendar_updated,calendar_deleted,calendar_resync"
+  + " > >(exec jq -c --unbuffered -R 'fromjson? | select(type == \"object\") | {change}' 2>/dev/null)"
+
+var watchCommand = ["bash", "-c", watchScript, "omacal"]
 
 function isWatchChange(line) {
   var text = String(line || "")
