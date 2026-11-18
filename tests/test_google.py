@@ -121,6 +121,19 @@ class Writing(unittest.TestCase):
         self.assertEqual(body["end"], {"dateTime": "2026-10-19T21:30:00", "timeZone": "Europe/Berlin"})
         self.assertEqual(body["reminders"], {"useDefault": False, "overrides": [{"method": "popup", "minutes": 30}]})
 
+    def test_a_timed_event_over_several_days_ends_on_its_until_day(self):
+        pretend = self.owner({("POST", "/calendars/me%40example.com/events"): {"id": "new"}})
+        google.create(pretend, {"title": "Offsite", "date": "2026-10-16", "startTime": "18:00", "endTime": "10:00",
+                                "endDate": "2026-10-18", "timeZone": "Europe/Berlin", "calendarId": "me@example.com"})
+        body = pretend.sent[-1][3]
+        self.assertEqual(body["start"], {"dateTime": "2026-10-16T18:00:00", "timeZone": "Europe/Berlin"})
+        self.assertEqual(body["end"], {"dateTime": "2026-10-18T10:00:00", "timeZone": "Europe/Berlin"})
+        # An end on another clock is on the until day too, not the day after
+        # the start, as a red-eye's would be.
+        start, end = google.schedule_body({"startTime": "18:00", "endTime": "09:00", "timeZone": "Europe/Berlin",
+                                           "endTimeZone": "America/New_York"}, "2026-10-16", "2026-10-18")
+        self.assertEqual(end, {"dateTime": "2026-10-18T09:00:00", "timeZone": "America/New_York", "date": None})
+
     def test_all_day_ends_the_day_after_its_last_and_an_hour_is_the_default(self):
         start, end = google.schedule_body({"allDay": True}, "2026-10-13", "2026-10-16")
         self.assertEqual((start["date"], end["date"]), ("2026-10-13", "2026-10-17"))
