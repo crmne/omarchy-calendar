@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "crmne.omacal",
   "name": "Calendar for Omarchy",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "author": "Carmine Paolino",
   "license": "MIT",
   "description": "Omarchy's stock clock and calendar with your calendars laid over it: HEY, Google Calendar and .ics feeds side by side, per-calendar event chips on the month grid, a day view, new events from the panel or a quick-add shortcut, reminders as notifications, the next event in the bar, and HEY time tracking.",
