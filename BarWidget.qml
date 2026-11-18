@@ -63,9 +63,9 @@ BarWidget {
   // ---- Calendar settings
   readonly property int alertLeadMinutes: Cal.normalizedAlertLead(setting("alertLeadMinutes", 15))
   readonly property int refreshIntervalSec: Cal.normalizedRefreshInterval(setting("refreshIntervalSec", 300))
-  readonly property bool barBold: setting("barBold", false) === true
-  readonly property bool notificationsEnabled: setting("notifications", true) !== false
-  readonly property bool liveSync: setting("liveSync", true) !== false
+  readonly property bool barBold: Cal.settingOn(setting("barBold", false), false)
+  readonly property bool notificationsEnabled: Cal.settingOn(setting("notifications", true), true)
+  readonly property bool liveSync: Cal.settingOn(setting("liveSync", true), true)
   readonly property string timeFormat: String(setting("timeFormat", "auto"))
   readonly property var hiddenCalendars: Cal.parseHiddenCalendars(setting("hiddenCalendars", []))
   onHiddenCalendarsChanged: rebuildIndex()
@@ -77,9 +77,9 @@ BarWidget {
 
   // ---- The services. HEY is on unless switched off; Google once switched
   //      on; the feeds whenever there are any (backends/Feeds.js).
-  readonly property bool heyEnabled: setting("heyEnabled", true) !== false
-  readonly property bool googleEnabled: setting("googleEnabled", false) === true
-  readonly property bool feedsEnabled: setting("feedsEnabled", true) !== false
+  readonly property bool heyEnabled: Cal.settingOn(setting("heyEnabled", true), true)
+  readonly property bool googleEnabled: Cal.settingOn(setting("googleEnabled", false), false)
+  readonly property bool feedsEnabled: Cal.settingOn(setting("feedsEnabled", true), true)
   // Where the plugin is, for the backends that run a helper next to their
   // file.
   readonly property var sourceContext: ({ dir: Cal.localPath(Qt.resolvedUrl(".")) })

@@ -1205,7 +1205,7 @@ Panel {
                 fontFamily: root.contentFontFamily
                 serviceName: !root.hostWidget ? "HEY"
                   : (eventForm.editing && typeof root.hostWidget.serviceName === "function" ? root.hostWidget.serviceName(eventForm.editing) : root.hostWidget.backendName)
-                placeSuggestions: root.setting("placeSuggestions", true) !== false
+                placeSuggestions: Cal.settingOn(root.setting("placeSuggestions", true), true)
                 onSubmitted: function(form) { root.submitEvent(form) }
                 onCanceled: root.cancelComposing()
                 onOpenRequested: function(url) { if (root.hostWidget) root.hostWidget.openUrl(url) }

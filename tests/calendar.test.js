@@ -782,6 +782,18 @@ test("a helper's own words for failed weeks reach the panel", function() {
   assert.strictEqual(Hey.localPath("file:///home/me/My%20Plugins/omacal/"), "/home/me/My Plugins/omacal/")
 })
 
+test("on/off settings read text as well, since omarchy bar set stores it", function() {
+  assert.strictEqual(Hey.settingOn(true, false), true)
+  assert.strictEqual(Hey.settingOn(false, true), false)
+  assert.strictEqual(Hey.settingOn("true", false), true)
+  assert.strictEqual(Hey.settingOn(" FALSE ", true), false)
+  // Anything else is the default, as a missing setting is.
+  for (var odd of [undefined, null, "", "yes", 1, 0, {}]) {
+    assert.strictEqual(Hey.settingOn(odd, true), true, String(odd))
+    assert.strictEqual(Hey.settingOn(odd, false), false, String(odd))
+  }
+})
+
 if (failures > 0) {
   console.error(failures + " failed [" + tz + "]")
   process.exit(1)

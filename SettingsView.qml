@@ -306,7 +306,7 @@ FocusScope {
       width: parent.width
       label: "HEY"
       description: root.sourceNote("hey", "Reads HEY through hey-cli. Run `hey setup` to sign in.")
-      checked: root.value("heyEnabled", true) !== false
+      checked: Cal.settingOn(root.value("heyEnabled", true), true)
       foreground: root.foreground
       fontFamily: root.fontFamily
       onClicked: root.save("heyEnabled", !checked)
@@ -317,7 +317,7 @@ FocusScope {
       label: "Google Calendar"
       description: root.sourceNote("google", "Reads and writes Google Calendar, signed in through gws, the Google Workspace CLI: "
         + "install googleworkspace-cli and run `gws auth login -s calendar`.")
-      checked: root.value("googleEnabled", false) === true
+      checked: Cal.settingOn(root.value("googleEnabled", false), false)
       foreground: root.foreground
       fontFamily: root.fontFamily
       onClicked: root.save("googleEnabled", !checked)
@@ -492,7 +492,7 @@ FocusScope {
       width: parent.width
       label: "Bold in the bar"
       description: "Sets the date, time and event in the bar in semibold."
-      checked: root.value("barBold", false) === true
+      checked: Cal.settingOn(root.value("barBold", false), false)
       foreground: root.foreground
       fontFamily: root.fontFamily
       onClicked: root.save("barBold", !checked)
@@ -503,7 +503,7 @@ FocusScope {
       width: parent.width
       label: "Notifications"
       description: "Your events' reminders as desktop notifications."
-      checked: root.value("notifications", true) !== false
+      checked: Cal.settingOn(root.value("notifications", true), true)
       foreground: root.foreground
       fontFamily: root.fontFamily
       onClicked: root.save("notifications", !checked)
@@ -514,7 +514,7 @@ FocusScope {
       visible: !!root.host && root.host.capabilities.watch
       label: "Live sync"
       description: "Follow changes made elsewhere within seconds."
-      checked: root.value("liveSync", true) !== false
+      checked: Cal.settingOn(root.value("liveSync", true), true)
       foreground: root.foreground
       fontFamily: root.fontFamily
       onClicked: root.save("liveSync", !checked)
@@ -525,7 +525,7 @@ FocusScope {
       width: parent.width
       label: "Suggest places"
       description: "Look up what you type in Where? and offer the places it could mean, as HEY does."
-      checked: root.value("placeSuggestions", true) !== false
+      checked: Cal.settingOn(root.value("placeSuggestions", true), true)
       foreground: root.foreground
       fontFamily: root.fontFamily
       onClicked: root.save("placeSuggestions", !checked)

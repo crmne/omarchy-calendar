@@ -138,7 +138,7 @@ Item {
   Source {
     id: heySource
     backend: Hey
-    enabled: root.wanted && root.setting("heyEnabled", true) !== false
+    enabled: root.wanted && Cal.settingOn(root.setting("heyEnabled", true), true)
     context: root.sourceContext
     readsWeeks: false
     onUpdated: root.updateCalendars()
@@ -147,7 +147,7 @@ Item {
   Source {
     id: googleSource
     backend: Google
-    enabled: root.wanted && root.setting("googleEnabled", false) === true
+    enabled: root.wanted && Cal.settingOn(root.setting("googleEnabled", false), false)
     context: root.sourceContext
     readsWeeks: false
     onUpdated: root.updateCalendars()
@@ -203,7 +203,7 @@ Item {
         todayKey: Cal.keyForDate(new Date())
         calendars: root.calendars
         defaultCalendarKey: root.lastCalendarKey()
-        placeSuggestions: { var entry = root.widgetEntry(); return !entry || entry.placeSuggestions !== false }
+        placeSuggestions: { var entry = root.widgetEntry(); return !entry || Cal.settingOn(entry.placeSuggestions, true) }
         busy: root.busy
         error: root.error
         foreground: Color.popups.text

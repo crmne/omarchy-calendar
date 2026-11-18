@@ -319,7 +319,8 @@ The gear button in the panel (or `S`) opens the settings, right under the
 calendar. Omarchy does not draw settings screens for plugin widgets yet, so
 they live there. Tab walks them, arrows pick, Enter applies, Esc goes back.
 Each change is saved to the widget's entry in `~/.config/omarchy/shell.json`
-at once, so it can be edited there too.
+at once, so it can be edited there too, or set from a terminal with
+`omarchy bar set crmne.omacal barBold true`.
 
 | Key | Default | Meaning |
 | --- | --- | --- |

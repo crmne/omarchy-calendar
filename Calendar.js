@@ -1066,6 +1066,17 @@ function normalizedRefreshInterval(value) {
   return Math.min(3600, seconds)
 }
 
+// An on/off setting. The settings and Omarchy's own settings screen write
+// true or false, but `omarchy bar set` stores what it is given as text, so
+// "true" and "false" count as well. Anything else is the setting's default.
+function settingOn(value, fallback) {
+  if (value === true || value === false) return value
+  var text = value === undefined || value === null ? "" : String(value).trim().toLowerCase()
+  if (text === "true") return true
+  if (text === "false") return false
+  return fallback === true
+}
+
 // ---------------------------------------------------------------------------
 // Notifications
 // ---------------------------------------------------------------------------
@@ -1824,6 +1835,7 @@ if (typeof module !== "undefined") {
     barLabel: barLabel,
     minutesUntil: minutesUntil,
     normalizedRefreshInterval: normalizedRefreshInterval,
+    settingOn: settingOn,
     reminderKey: reminderKey,
     dueReminders: dueReminders,
     reminderLead: reminderLead,
