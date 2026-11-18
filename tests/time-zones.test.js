@@ -1,23 +1,43 @@
 const assert = require('node:assert/strict')
+const { execFileSync } = require('node:child_process')
 const fs = require('node:fs')
 const Zones = require('../TimeZones.js')
 const names = ['Europe/Berlin', 'America/New_York', 'Asia/Tokyo', 'Pacific/Kiritimati', 'Australia/Sydney', 'Australia/Lord_Howe', 'Asia/Kathmandu', 'Africa/Casablanca', 'Europe/Dublin']
+
+// What the clock reads at each instant, according to the C library reading the
+// same zone file. Node's Intl is no reference: ICU carries its own copy of the
+// time zone database, which lags or leads the system's. tzdata 2026c moved
+// Morocco to permanent UTC from 2026-09-20, and a Node whose ICU predates that
+// still puts Casablanca an hour ahead.
+function systemWalls(name, instants) {
+  const out = execFileSync('date', ['-f', '-', '+%Y-%m-%d %H:%M'], {
+    input: instants.map(instant => `@${instant / 1000}\n`).join(''),
+    env: { ...process.env, TZ: name, LC_ALL: 'C' },
+  })
+  return String(out).trim().split('\n').map(line => {
+    const [date, clock] = line.split(' ')
+    return { date, clock }
+  })
+}
+
 let cases = 0
 for (const name of names) {
   const zone = Zones.parse(fs.readFileSync(Zones.zonePath(name)))
   assert.ok(zone, name)
-  const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: name, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+  const instants = []
   for (const year of [2026, 2027, 2040, 2100]) {
-    for (let month = 0; month < 12; month++) {
-      const instant = Date.UTC(year, month, 15, 12, 34)
-      const parts = Object.fromEntries(formatter.formatToParts(instant).map(p => [p.type, p.value]))
-      const wall = zone.wall(instant)
-      assert.equal(wall.date, `${parts.year}-${parts.month}-${parts.day}`, `${name} ${year}`)
-      assert.equal(wall.clock, `${parts.hour}:${parts.minute}`, `${name} ${year}`)
-      assert.equal(zone.place(wall.date, wall.clock), instant, `${name} ${year}`)
-      cases++
-    }
+    for (let month = 0; month < 12; month++) instants.push(Date.UTC(year, month, 15, 12, 34))
   }
+  const expected = systemWalls(name, instants)
+  assert.equal(expected.length, instants.length, name)
+  instants.forEach((instant, index) => {
+    const label = `${name} ${new Date(instant).toISOString()}`
+    const wall = zone.wall(instant)
+    assert.equal(wall.date, expected[index].date, label)
+    assert.equal(wall.clock, expected[index].clock, label)
+    assert.equal(zone.place(wall.date, wall.clock), instant, label)
+    cases++
+  })
 }
 const berlin = Zones.parse(fs.readFileSync(Zones.zonePath('Europe/Berlin')))
 assert.equal(new Date(berlin.place('2027-03-28', '02:30')).toISOString(), '2027-03-28T01:30:00.000Z')
