@@ -331,6 +331,7 @@ at once, so it can be edited there too.
 | `quickAddShortcut` | `ALT + SHIFT + SPACE` | Opens the quick-add card. Empty turns it off. |
 | `alertLeadMinutes` | `15` | How early the bar names an event that has no reminders, and what counts as "about to start". |
 | `timeFormat` | `auto` | `auto`, `12` or `24`. |
+| `barBold` | `false` | Set the date, time and event in the bar in semibold. Horizontal bars only. |
 | `liveSync` | `true` | Keep a `hey watch` running for instant updates. |
 | `refreshIntervalSec` | `300` | Polling fallback, 30 to 3600. |
 | `hiddenCalendars` | `""` | Comma-separated calendars to leave out: keys such as `hey:7`, as the settings write them, or names, which hide that name on every service. |

@@ -39,6 +39,7 @@
       "notifications": true,
       "liveSync": true,
       "timeFormat": "auto",
+      "barBold": false,
       "refreshIntervalSec": 300,
       "quickAddShortcut": "ALT + SHIFT + SPACE",
       "barEvent": "soon",
@@ -122,6 +123,13 @@
         ],
         "defaultValue": "auto",
         "description": "\"auto\" follows the system locale."
+      },
+      {
+        "key": "barBold",
+        "type": "boolean",
+        "label": "Bold in the bar",
+        "defaultValue": false,
+        "description": "Sets the date, time and event in the bar in semibold. Horizontal bars only."
       },
       {
         "key": "liveSync",

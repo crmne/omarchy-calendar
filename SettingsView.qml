@@ -488,6 +488,16 @@ FocusScope {
       onChanged: function(v) { root.save("timeFormat", v) }
     }
 
+    Toggle {
+      width: parent.width
+      label: "Bold in the bar"
+      description: "Sets the date, time and event in the bar in semibold."
+      checked: root.value("barBold", false) === true
+      foreground: root.foreground
+      fontFamily: root.fontFamily
+      onClicked: root.save("barBold", !checked)
+    }
+
     // ---- Switches
     Toggle {
       width: parent.width

@@ -63,6 +63,7 @@ BarWidget {
   // ---- Calendar settings
   readonly property int alertLeadMinutes: Cal.normalizedAlertLead(setting("alertLeadMinutes", 15))
   readonly property int refreshIntervalSec: Cal.normalizedRefreshInterval(setting("refreshIntervalSec", 300))
+  readonly property bool barBold: setting("barBold", false) === true
   readonly property bool notificationsEnabled: setting("notifications", true) !== false
   readonly property bool liveSync: setting("liveSync", true) !== false
   readonly property string timeFormat: String(setting("timeFormat", "auto"))
@@ -691,6 +692,11 @@ BarWidget {
     function toggle(): void { root.togglePanel() }
     function newEvent(): void { root.newEvent() }
     function settings(): void { root.openSettings() }
+  }
+
+  LabelWeight {
+    button: button
+    weight: root.barBold ? Font.DemiBold : Font.Normal
   }
 
   WidgetButton {

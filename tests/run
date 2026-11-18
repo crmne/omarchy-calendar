@@ -13,3 +13,23 @@ for tz in UTC America/Los_Angeles Europe/Berlin Asia/Tokyo Pacific/Kiritimati; d
   TZ=$tz /usr/bin/python3 -I -B test_google.py
   TZ=$tz /usr/bin/python3 -I -B test_feeds.py
 done
+
+# LabelWeight reaches into Omarchy's WidgetButton, so check it against the
+# installed shell. Machines without Quickshell and Omarchy, like CI, skip it.
+shell_dir=${OMARCHY_PATH:-/usr/share/omarchy}/shell
+if command -v quickshell >/dev/null && [ -d "$shell_dir/Ui" ]; then
+  work=$(mktemp -d /tmp/omacal-label-weight.XXXXXX)
+  trap 'rm -rf -- "$work"' EXIT
+  ln -s "$shell_dir/Commons" "$work/Commons"
+  ln -s "$shell_dir/Ui" "$work/Ui"
+  ln -s "$(cd .. && pwd)" "$work/plugin"
+  cp label-weight.qml "$work/shell.qml"
+  out=$(QT_QPA_PLATFORM=offscreen timeout 30s quickshell -p "$work" --no-color 2>&1 || true)
+  if ! grep -q "LABEL WEIGHT PASS" <<<"$out"; then
+    echo "$out" >&2
+    exit 1
+  fi
+  echo "LabelWeight: ok"
+else
+  echo "LabelWeight: skipped, needs Quickshell and Omarchy's shell"
+fi
