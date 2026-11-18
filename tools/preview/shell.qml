@@ -1,7 +1,12 @@
+//@ pragma OmarchyLoadPatch
 // Renders Calendar for Omarchy's real panel, quick-add form and settings with a made-up
 // calendar, for the README and release screenshots. No backend runs: a
 // stand-in host serves fictional events, so no account is read and nothing
 // is written. Run through tools/render-screenshots.
+//
+// The pragma loads the plugin as Omarchy's shell does. Without it, Qt 6.12's
+// own Color type wins over Omarchy's palette (qs.Commons' Color) in files that
+// import both, and every color read from it comes out black.
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
